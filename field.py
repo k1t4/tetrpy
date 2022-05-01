@@ -20,8 +20,10 @@ class Field(Matrix):
         result_list = copy.deepcopy(self.list)
 
         for y in range(tetr.y, tetr.y + tetr.size_y):
-            for x in range(tetr.x, tetr.x + tetr.size_x):
-                result_list[y][x] = tetr[y - tetr.y][x - tetr.x] or self[y][x]
+            if y >= 0:  # no need to render elements that are out of top border
+                for x in range(tetr.x, tetr.x + tetr.size_x):
+                    result_list[y][x] = (tetr[y - tetr.y][x - tetr.x]
+                                         or self[y][x])
 
         return result_list
 
@@ -31,7 +33,7 @@ class Field(Matrix):
         x_center_element = tetr.size_x // 2
         x_center_element_on_field = x_center_field - x_center_element
         tetr.x = x_center_element_on_field
-        tetr.y = 0
+        tetr.y = -tetr.size_y
 
     def rotate(self, tetr):
         if self._is_able_to_rotate(tetr):
@@ -56,8 +58,8 @@ class Field(Matrix):
         """
         reached_bottom = tetr.y == FIELD_HEIGHT - tetr.size_y - 1
         touched_edge = self._touched_edge(tetr)
-
         if reached_bottom or touched_edge:
+            print(f'{reached_bottom=}, {touched_edge=}')
             return True
 
         return False
@@ -87,6 +89,10 @@ class Field(Matrix):
             return self._remove_filled_rows(index)
 
         return 0
+
+    @staticmethod
+    def out_of_top_border(tetr):
+        return tetr.y - tetr.size_y + 1 < 0
 
     def _get_filled_rows(self):
         """
@@ -163,8 +169,11 @@ class Field(Matrix):
         """
         for y in range(tetr.size_y):
             for x in range(tetr.size_x):
-                is_edge_brick = tetr[y][x] and tetr.safe_get(y+1, x) in (0, None)
-                is_in_contact = self.safe_get(tetr.y + y+1, tetr.x + x) == 1
+                is_edge_brick = (
+                        tetr[y][x] and tetr.safe_get(y+1, x) in (0, None))
+                is_edge_brick = is_edge_brick and tetr.y + y >= 0
+                is_in_contact = (
+                        self.safe_get(tetr.y + y + 1, tetr.x + x) in (1, 2))
                 if is_edge_brick and is_in_contact:
                     return True
         return False
