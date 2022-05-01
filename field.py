@@ -76,10 +76,6 @@ class Field(Matrix):
         Returns number of block that were deleted
         """
         result = self._get_filled_rows()
-
-        with open('/dev/pts/0', 'w') as term:
-            term.write(str(result))
-
         if isinstance(result, tuple):
             first_index, last_index = result
             return self._remove_filled_rows(first_index, last_index)
