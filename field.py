@@ -59,7 +59,6 @@ class Field(Matrix):
         reached_bottom = tetr.y == FIELD_HEIGHT - tetr.size_y - 1
         touched_edge = self._touched_edge(tetr)
         if reached_bottom or touched_edge:
-            print(f'{reached_bottom=}, {touched_edge=}')
             return True
 
         return False

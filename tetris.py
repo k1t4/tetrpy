@@ -20,10 +20,8 @@ class Tetris:
 
         while True:
             if self.field.has_landed(tetr):
-                print('i was here')
                 self.field.fixate(tetr)
                 if self.field.out_of_top_border(tetr):
-                    print(f'out of top border')
                     return True
                 num_handled_rows = self.field.handle_filled_rows()
                 self.score += num_handled_rows
